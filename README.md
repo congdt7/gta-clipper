@@ -46,6 +46,14 @@ python3 scripts/cut_highlights.py gta_streams/<file>.mp4 --clips 5 --length 30 -
 
 `--facecam x,y,w,h` là vị trí ô facecam theo tỉ lệ 0..1 của khung hình. Chạy `--preview` để lấy một khung hình có lưới 10% và đọc vị trí; khi dùng qua Claude Code, Claude tự làm bước này.
 
+## Thay webcam bằng hoạt hình
+
+```bash
+python3 scripts/cut_highlights.py <video> --layout stack --facecam 0,0.40,0.20,0.20 --cam-overlay assets/smiley.gif
+```
+
+`--cam-overlay` nhận PNG, GIF động hoặc video WebM/MOV có nền trong suốt. Ô webcam trong gameplay bị tô đen và đặt hoạt hình lên; phần facecam phía trên của `stack`/`full` dùng thẳng file hoạt hình nên vẫn nét. `assets/smiley.gif` là hoạt hình mặc định.
+
 ## Lưu ý bản quyền
 
 Đăng lại clip từ stream của người khác có thể bị gậy bản quyền. Hãy xin phép streamer và ghi nguồn (tên kênh + link).

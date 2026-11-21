@@ -40,6 +40,8 @@ Cần `ffmpeg`, `yt-dlp`, `python3` và một JS runtime (`deno` hoặc `node`) 
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/cut_highlights.py" "<video>" --clips 5 --length 30 --layout stack --facecam 0,0.14,0.25,0.33
    ```
    Clip được ghi vào `<tên video>_clips/` cạnh video gốc. Mở một thumbnail của clip đầu để kiểm tra facecam có được cắt đúng không; sai thì sửa `--facecam` và chạy lại.
+
+   **Thay webcam bằng hoạt hình/icon** (khi người dùng muốn ẩn mặt streamer): thêm `--cam-overlay <file>` (cần `--facecam`). File có thể là PNG, GIF động, hoặc video WebM/MOV có nền trong suốt; GIF và video tự lặp. Ô webcam trong gameplay bị tô đen rồi đặt hoạt hình lên, và phần facecam phía trên (`stack`/`full`) dùng thẳng file hoạt hình. Người dùng không đưa file thì dùng mặt cười mặc định `${CLAUDE_PLUGIN_ROOT}/assets/smiley.gif`. Kiểm tra thumbnail: không được còn thấy mặt streamer ở bất kỳ đâu; nếu lộ mép thì nới `--facecam` ra một chút.
 4. Xem thumbnail `.jpg` cùng tên từng clip, mô tả ngắn nội dung và đề xuất tiêu đề.
 5. Báo lại: danh sách file, mốc thời gian, tiêu đề gợi ý, và kênh gốc của stream.
 
