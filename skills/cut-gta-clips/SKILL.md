@@ -23,7 +23,7 @@ Cần `ffmpeg`, `yt-dlp`, `python3` và một JS runtime (`deno` hoặc `node`) 
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/find_trending.py" --query "GTA 6" --top 3 --minutes 20 --out gta_streams
    ```
 3. Với mỗi file trong trường `recording`, làm phần B. Bản ghi tên `<kênh>_<ngày>_<giờ>_<id>.mp4`, kèm `<cùng tên>.json` chứa link, tiêu đề, kênh của stream.
-   Nếu yt-dlp báo `Sign in to confirm you're not a bot`, YouTube đang tạm chặn máy này: báo người dùng đợi một lúc rồi thử lại; không tự lấy cookie trình duyệt.
+   Nếu yt-dlp báo `Sign in to confirm you're not a bot`, YouTube đang tạm chặn máy này. Báo người dùng hai cách: đợi một lúc (hoặc đổi mạng) rồi thử lại, hoặc đăng nhập bằng tài khoản YouTube của chính họ qua cookie trình duyệt bằng cờ `--cookies-from-browser chrome` (hoặc `safari`, `firefox`; nên dùng tài khoản phụ vì YouTube có thể gắn cờ tài khoản tải nhiều). Chỉ thêm cờ này khi người dùng đồng ý trong lượt chat này; không tự lấy cookie.
 
 ## B. Cắt highlight từ một file video
 

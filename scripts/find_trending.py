@@ -10,10 +10,10 @@ YTDLP = ["yt-dlp"] if shutil.which("yt-dlp") else [sys.executable, "-m", "yt_dlp
 LIVE_FILTER = "EgJAAQ%253D%253D"  # YouTube search filter: "Live"
 
 
-def search_live(query, limit):
+def search_live(query, limit, auth=()):
     """Return live streams for `query`, most concurrent viewers first."""
     url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp={LIVE_FILTER}"
-    p = subprocess.run([*YTDLP, "--flat-playlist", "-I", f"1:{limit}", "-J", url],
+    p = subprocess.run([*YTDLP, *auth, "--flat-playlist", "-I", f"1:{limit}", "-J", url],
                        capture_output=True, text=True)
     if p.returncode != 0:
         sys.exit(f"yt-dlp search failed:\n{p.stderr[-2000:]}")
@@ -27,11 +27,11 @@ def search_live(query, limit):
     return sorted(streams, key=lambda s: s["viewers"], reverse=True)
 
 
-def record(stream, minutes, out_dir):
+def record(stream, minutes, out_dir, auth=()):
     """Record `minutes` of a live stream from now via its HLS URL."""
     # YouTube needs a JS runtime; yt-dlp only auto-uses deno, so opt into node when that's what exists
     js = ["--js-runtimes", "node"] if shutil.which("node") and not shutil.which("deno") else []
-    hls = subprocess.run([*YTDLP, *js, "-g", "-f", "bv*[height<=1080]+ba/b[height<=1080]/b", stream["url"]],
+    hls = subprocess.run([*YTDLP, *auth, *js, "-g", "-f", "bv*[height<=1080]+ba/b[height<=1080]/b", stream["url"]],
                          capture_output=True, text=True)
     urls = hls.stdout.split()
     if hls.returncode != 0 or not urls:
@@ -61,10 +61,13 @@ def main():
     ap.add_argument("--minutes", type=float, default=20, help="minutes to record per stream")
     ap.add_argument("--min-viewers", type=int, default=0)
     ap.add_argument("--out", default="gta_streams")
+    ap.add_argument("--cookies-from-browser", metavar="BROWSER",
+                    help="sign in with your own YouTube cookies from this browser (chrome, safari, firefox...) when YouTube asks to confirm you're not a bot")
     ap.add_argument("--list-only", action="store_true", help="just print trending streams")
     a = ap.parse_args()
 
-    streams = [s for s in search_live(a.query, 30) if s["viewers"] >= a.min_viewers][:a.top]
+    auth = ["--cookies-from-browser", a.cookies_from_browser] if a.cookies_from_browser else []
+    streams = [s for s in search_live(a.query, 30, auth) if s["viewers"] >= a.min_viewers][:a.top]
     if not streams:
         sys.exit(f"Không thấy live nào cho '{a.query}'.")
     if a.list_only:
@@ -73,7 +76,7 @@ def main():
     out_dir = Path(a.out).expanduser()
     out_dir.mkdir(parents=True, exist_ok=True)
     for s in streams:
-        s["recording"] = record(s, a.minutes, out_dir)
+        s["recording"] = record(s, a.minutes, out_dir, auth)
     print(json.dumps(streams, ensure_ascii=False, indent=2))
 
 
