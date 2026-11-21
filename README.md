@@ -33,6 +33,7 @@ Hoặc chạy script trực tiếp:
 python3 scripts/find_trending.py --top 5 --list-only
 python3 scripts/find_trending.py --top 3 --minutes 20 --out gta_streams
 # YouTube báo "Sign in to confirm you're not a bot": đăng nhập bằng cookie trình duyệt của bạn
+# (Terminal cần Full Disk Access để đọc cookie Chrome: System Settings → Privacy & Security → Full Disk Access)
 python3 scripts/find_trending.py --top 3 --minutes 20 --out gta_streams --cookies-from-browser chrome
 python3 scripts/cut_highlights.py gta_streams/<file>.mp4 --clips 5 --length 30 --layout stack --facecam 0,0.14,0.25,0.33
 ```
