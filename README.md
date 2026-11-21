@@ -35,6 +35,19 @@ python3 scripts/find_trending.py --top 3 --minutes 20 --out gta_streams
 python3 scripts/cut_highlights.py gta_streams/<file>.mp4 --clips 5 --length 30 --layout stack --facecam 0,0.14,0.25,0.33
 ```
 
+## Output
+
+```
+gta_streams/
+├── Kai_Cenat_Live_2026-11-21_105900_dSDUAAr-w_g.mp4      ← bản ghi (kênh_ngày_giờ_id), không bao giờ bị đè
+├── Kai_Cenat_Live_2026-11-21_105900_dSDUAAr-w_g.json     ← link, tiêu đề, kênh, giờ ghi
+└── Kai_Cenat_Live_2026-11-21_105900_dSDUAAr-w_g_clips/
+    └── 2026-11-21_110412_stack/                         ← mỗi lần cắt một thư mục
+        ├── clip_01_00-00-21.mp4
+        ├── clip_01_00-00-21.jpg
+        └── clips.json                                   ← nguồn, kiểu clip, mốc thời gian, điểm, tiêu đề gợi ý
+```
+
 ## Bố cục clip (`--layout`)
 
 | Kiểu | Mô tả |

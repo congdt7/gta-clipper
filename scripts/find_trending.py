@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Find trending YouTube live streams for a game and record the next N minutes of each."""
 import argparse, json, re, shutil, subprocess, sys
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote_plus
 
@@ -36,14 +37,21 @@ def record(stream, minutes, out_dir):
     if hls.returncode != 0 or not urls:
         print(f"Bỏ qua {stream['url']}: không lấy được luồng ({hls.stderr.strip()[-300:]})", file=sys.stderr)
         return None
-    safe = re.sub(r"[^\w\-]+", "_", f"{stream['channel']}_{stream['id']}")[:80]
-    out = out_dir / f"{safe}.mp4"
+    started = datetime.now()
+    safe = re.sub(r"[^\w\-]+", "_", stream["channel"] or "unknown")[:60]
+    out = out_dir / f"{safe}_{started:%Y-%m-%d_%H%M%S}_{stream['id']}.mp4"
     print(f"Đang ghi {minutes} phút: {stream['title']} ({stream['viewers']} người xem)", file=sys.stderr)
     inputs = [arg for u in urls[:2] for arg in ("-i", u)]
     maps = ["-map", "0:v:0", "-map", "1:a:0"] if len(urls) > 1 else []  # separate video + audio streams
-    p = subprocess.run(["ffmpeg", "-y", "-v", "error", *inputs, *maps,
+    p = subprocess.run(["ffmpeg", "-n", "-v", "error", *inputs, *maps,  # -n: never overwrite a recording
                         "-t", str(minutes * 60), "-c", "copy", str(out)])
-    return str(out) if p.returncode == 0 and out.exists() else None
+    if p.returncode != 0 or not out.exists():
+        return None
+    # sidecar read by cut_highlights.py so clips.json can credit the source
+    meta = {k: stream[k] for k in ("url", "title", "channel", "viewers")}
+    meta |= {"recorded_at": started.isoformat(timespec="seconds"), "minutes": minutes}
+    out.with_suffix(".json").write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+    return str(out)
 
 
 def main():

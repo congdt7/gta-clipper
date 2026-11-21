@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Find and cut highlight clips from a gameplay video using loudness + scene-change scores."""
 import argparse, json, math, re, subprocess, sys
+from datetime import datetime
 from pathlib import Path
 
 
@@ -183,8 +184,15 @@ def main():
              "-vf", "scale=1280:-2,drawgrid=w=iw/10:h=ih/10:t=1:c=red@0.6", str(prev)])
         print(prev)
         return
-    out = Path(a.out).expanduser() if a.out else Path(video).with_name(Path(video).stem + "_clips")
-    out.mkdir(parents=True, exist_ok=True)
+    base = Path(a.out).expanduser() if a.out else Path(video).with_name(Path(video).stem + "_clips")
+    created = datetime.now()
+    # one folder per run so re-cutting never overwrites or mixes with earlier clips
+    out = base / f"{created:%Y-%m-%d_%H%M%S}_{a.layout}"
+    k = 2
+    while out.exists():
+        out = base / f"{created:%Y-%m-%d_%H%M%S}_{a.layout}_{k}"
+        k += 1
+    out.mkdir(parents=True)
 
     dur = duration(video)
     n = max(1, math.ceil(dur))
@@ -211,10 +219,19 @@ def main():
         # thumbnail from the finished clip so it shows the chosen layout
         run(["ffmpeg", "-y", "-v", "error", "-ss", str(length / 2), "-i", str(clip),
              "-frames:v", "1", "-vf", "scale='min(640,iw)':-2", str(clip.with_suffix(".jpg"))])
-        results.append({"file": str(clip), "thumbnail": str(clip.with_suffix(".jpg")),
+        results.append({"file": clip.name, "thumbnail": clip.with_suffix(".jpg").name,
                         "start": hhmmss(start), "end": hhmmss(min(start + length, dur)),
                         "score": round(total / length, 3)})
-    print(json.dumps(results, ensure_ascii=False, indent=2))
+    sidecar = Path(video).with_suffix(".json")  # written by find_trending.py
+    try:
+        source = json.loads(sidecar.read_text()) if sidecar.is_file() else None
+    except (OSError, json.JSONDecodeError):
+        source = None
+    manifest = {"created_at": created.isoformat(timespec="seconds"), "video": video, "source": source,
+                "layout": a.layout, "facecam": a.facecam, "cam_overlay": a.cam_overlay,
+                "clip_length": length, "clips": results}
+    (out / "clips.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
+    print(json.dumps({"folder": str(out), **manifest}, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
