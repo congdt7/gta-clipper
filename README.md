@@ -32,8 +32,19 @@ Hoặc chạy script trực tiếp:
 ```bash
 python3 scripts/find_trending.py --top 5 --list-only
 python3 scripts/find_trending.py --top 3 --minutes 20 --out gta_streams
-python3 scripts/cut_highlights.py gta_streams/<file>.mp4 --clips 5 --length 30 --vertical
+python3 scripts/cut_highlights.py gta_streams/<file>.mp4 --clips 5 --length 30 --layout stack --facecam 0,0.14,0.25,0.33
 ```
+
+## Bố cục clip (`--layout`)
+
+| Kiểu | Mô tả |
+|---|---|
+| `wide` | Giữ nguyên 16:9 (mặc định) |
+| `stack` | Dọc 9:16: facecam phía trên, gameplay phía dưới. Cần `--facecam` |
+| `full` | Dọc 9:16: toàn bộ gameplay thu nhỏ trên nền mờ, facecam phía trên nếu có |
+| `center` | Dọc 9:16: cắt dải giữa (stream không có facecam). `--vertical` là tên cũ của kiểu này |
+
+`--facecam x,y,w,h` là vị trí ô facecam theo tỉ lệ 0..1 của khung hình. Chạy `--preview` để lấy một khung hình có lưới 10% và đọc vị trí; khi dùng qua Claude Code, Claude tự làm bước này.
 
 ## Lưu ý bản quyền
 

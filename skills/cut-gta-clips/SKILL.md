@@ -26,13 +26,22 @@ Cần `ffmpeg`, `yt-dlp`, `python3` và một JS runtime (`deno` hoặc `node`) 
 
 ## B. Cắt highlight từ một file video
 
-1. Chạy (mặc định 5 clip x 30 giây; thêm `--vertical` cho Shorts/TikTok/Reels 9:16):
+1. Chọn bố cục (`--layout`). Mặc định `wide` (giữ nguyên 16:9). Với Shorts/TikTok/Reels (dọc 1080x1920):
+   - `stack`: facecam phía trên, gameplay cắt giữa phía dưới. **Mặc định cho clip dọc khi stream có facecam.** Gameplay rõ, mất HUD ở mép.
+   - `full`: toàn bộ khung gameplay thu nhỏ ở giữa nền mờ, facecam (nếu có) phía trên. Dùng khi người dùng muốn thấy toàn cảnh; chữ HUD sẽ nhỏ.
+   - `center`: cắt dải 9:16 ở giữa. Dùng khi stream không có facecam.
+2. Nếu dùng `stack` hoặc `full` với facecam, tìm vị trí facecam:
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/cut_highlights.py" "<video>" --clips 5 --length 30
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/cut_highlights.py" "<video>" --preview
    ```
-   Clip được ghi vào `<tên video>_clips/` cạnh video gốc.
-2. Xem thumbnail `.jpg` cùng tên từng clip, mô tả ngắn nội dung và đề xuất tiêu đề.
-3. Báo lại: danh sách file, mốc thời gian, tiêu đề gợi ý, và kênh gốc của stream.
+   Mở ảnh `_preview.jpg` vừa in ra. Ảnh có lưới đỏ, mỗi ô 10% chiều ngang/dọc. Ước lượng khung facecam (webcam hoặc avatar của streamer, không phải minimap hay HUD) thành 4 số tỉ lệ `x,y,w,h` (góc trên-trái, rộng, cao, đều 0..1), nới rộng mỗi cạnh khoảng 1% để không cắt mất viền. Không thấy facecam: dùng `center` hoặc `full` không có `--facecam`.
+3. Chạy (mặc định 5 clip x 30 giây):
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/cut_highlights.py" "<video>" --clips 5 --length 30 --layout stack --facecam 0,0.14,0.25,0.33
+   ```
+   Clip được ghi vào `<tên video>_clips/` cạnh video gốc. Mở một thumbnail của clip đầu để kiểm tra facecam có được cắt đúng không; sai thì sửa `--facecam` và chạy lại.
+4. Xem thumbnail `.jpg` cùng tên từng clip, mô tả ngắn nội dung và đề xuất tiêu đề.
+5. Báo lại: danh sách file, mốc thời gian, tiêu đề gợi ý, và kênh gốc của stream.
 
 ## Lưu ý bản quyền
 
