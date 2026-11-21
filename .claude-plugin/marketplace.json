@@ -1,0 +1,11 @@
+{
+  "name": "gta-clipper",
+  "owner": { "name": "congdt7" },
+  "plugins": [
+    {
+      "name": "gta-clipper",
+      "source": "./",
+      "description": "Tự tìm live stream GTA 6 thịnh hành trên YouTube, ghi lại và cắt clip highlight bằng ffmpeg."
+    }
+  ]
+}
