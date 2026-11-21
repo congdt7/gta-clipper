@@ -34,7 +34,7 @@ Cần `ffmpeg`, `yt-dlp`, `python3` và một JS runtime (`deno` hoặc `node`) 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/cut_highlights.py" "<video>" --preview
    ```
-   Mở ảnh `_preview.jpg` vừa in ra. Ảnh có lưới đỏ, mỗi ô 10% chiều ngang/dọc. Ước lượng khung facecam (webcam hoặc avatar của streamer, không phải minimap hay HUD) thành 4 số tỉ lệ `x,y,w,h` (góc trên-trái, rộng, cao, đều 0..1), nới rộng mỗi cạnh khoảng 1% để không cắt mất viền. Không thấy facecam: dùng `center` hoặc `full` không có `--facecam`.
+   Mở ảnh `_preview.jpg` vừa in ra. Ảnh có lưới đỏ, mỗi ô 10% chiều ngang/dọc. Ước lượng khung facecam (webcam hoặc avatar của streamer, không phải minimap hay HUD) thành 4 số tỉ lệ `x,y,w,h` (góc trên-trái, rộng, cao, đều 0..1), lấy sát mép **bên trong** ô webcam: thà hụt khoảng 0.5% còn hơn lố ra ngoài, vì phần game lọt vào sẽ thành dải màu lạ ở mép facecam. Không thấy facecam: dùng `center` hoặc `full` không có `--facecam`.
 3. Chạy (mặc định 5 clip x 30 giây):
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/cut_highlights.py" "<video>" --clips 5 --length 30 --layout stack --facecam 0,0.14,0.25,0.33
