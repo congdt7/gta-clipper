@@ -1,6 +1,6 @@
 {
   "name": "gta-clipper",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Tự tìm live stream GTA 6 thịnh hành trên YouTube, ghi lại và cắt clip highlight bằng ffmpeg.",
   "author": { "name": "congdt7" }
 }
